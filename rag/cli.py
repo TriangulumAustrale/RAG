@@ -23,18 +23,24 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", metavar="<command>")
     for name, help_text in COMMANDS.items():
         p = sub.add_parser(name, help=help_text)
+        if name == "collect":
+            p.add_argument("--days", type=int, default=30, help="how far back to read event logs (default: 30)")
         if name in ("search", "ask"):
             p.add_argument("question", help="e.g. \"why did my game crash last night?\"")
     return parser
 
 
-def collect() -> int:
-    from rag.collect import system_info
+def collect(days: int) -> int:
+    from rag.collect import event_logs, system_info
 
     info = system_info.collect()
     path = system_info.save(info)
     gpus = ", ".join(g["name"] for g in info["gpus"]) or "none found"
     print(f"System info: {info['os']['name']} (build {info['os']['build']}), GPU: {gpus} -> {path}")
+
+    events = event_logs.read_events(days)
+    path = event_logs.save(events)
+    print(f"Event logs: {len(events)} events from the last {days} days -> {path}")
     return 0
 
 
@@ -45,7 +51,7 @@ def main(argv=None) -> int:
         parser.print_help()
         return 0
     if args.command == "collect":
-        return collect()
+        return collect(args.days)
     print(f"'{args.command}' is not implemented yet.", file=sys.stderr)
     return 1
 

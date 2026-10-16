@@ -43,7 +43,35 @@ Planned commands:
 | `search "<question>"` | Show the evidence found, without calling an LLM |
 | `ask "<question>"` | Answer a question about your PC |
 
-These get built in issues #2–#10. So far, `collect` saves a system snapshot (OS, CPU, RAM, GPU and driver, uptime) to `data/raw/system_info.json`.
+These get built in issues #2–#10. So far, `collect` saves:
+
+- a system snapshot (OS, CPU, RAM, GPU and driver, uptime) to `data/raw/system_info.json`
+- Windows Event Log entries from the last 30 days (`--days N` to change) to `data/raw/events.jsonl`
+
+### Which events are collected
+
+From the **System** and **Application** logs:
+
+- every Critical, Error and Warning event
+- these crash-related events at **any** level, because Windows logs some of them as Information:
+
+| Source | Event ID | Meaning |
+|---|---|---|
+| Kernel-Power | 41 | Unexpected shutdown or reboot |
+| EventLog | 6008 | Previous shutdown was unexpected |
+| WER-SystemErrorReporting | 1001 | Blue screen (bugcheck) |
+| Windows Error Reporting | 1001 | Crash reports, e.g. `BlueScreen`, `LiveKernelEvent` (code 141 = GPU stopped responding and was reset), `APPCRASH` |
+| Display | 4101 | Display driver stopped responding and recovered |
+| nvlddmkm | any | NVIDIA driver errors |
+| Application Error / Hang | 1000 / 1002 | An app crashed or froze |
+
+### Admin access
+
+| Data | Needs admin? |
+|---|---|
+| System info | No |
+| System and Application event logs | No |
+| Crash dumps in `C:\Windows\Minidump` (issue #4) | Yes |
 
 ## Project layout
 
