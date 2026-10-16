@@ -1,0 +1,5 @@
+chromadb
+sentence-transformers
+python-dateutil
+python-dotenv
+pytest
