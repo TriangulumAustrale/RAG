@@ -43,7 +43,7 @@ Planned commands:
 | `search "<question>"` | Show the evidence found, without calling an LLM |
 | `ask "<question>"` | Answer a question about your PC |
 
-None of these work yet. They get built in issues #2–#10.
+These get built in issues #2–#10. So far, `collect` saves a system snapshot (OS, CPU, RAM, GPU and driver, uptime) to `data/raw/system_info.json`.
 
 ## Project layout
 

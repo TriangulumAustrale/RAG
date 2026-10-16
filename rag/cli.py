@@ -28,12 +28,24 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def collect() -> int:
+    from rag.collect import system_info
+
+    info = system_info.collect()
+    path = system_info.save(info)
+    gpus = ", ".join(g["name"] for g in info["gpus"]) or "none found"
+    print(f"System info: {info['os']['name']} (build {info['os']['build']}), GPU: {gpus} -> {path}")
+    return 0
+
+
 def main(argv=None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     if args.command is None:
         parser.print_help()
         return 0
+    if args.command == "collect":
+        return collect()
     print(f"'{args.command}' is not implemented yet.", file=sys.stderr)
     return 1
 
